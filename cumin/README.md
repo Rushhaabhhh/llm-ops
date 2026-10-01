@@ -31,5 +31,21 @@ Measured on the unchecked path: `OpenAIInference.complete` has no auth, plan, or
 Exact samples are in [benchmarks/unchecked_baseline.json](benchmarks/unchecked_baseline.json). Reproduce with:
 
 ```bash
-uv run --env-file .env scripts/benchmark_unchecked.py
+uv run --env-file .env python scripts/benchmark_unchecked.py
+```
+
+## After auth, rate limit, and budget checks
+
+Same prompt, model, and sample size. Latency is `RequestHandler.handle`: authenticate, rate-limit, classify the prompt, reserve budget, call the model, moderate the output, and settle. Time to first token runs those gates and then streams, because `handle` does not stream. Each non-streaming call used 18 input tokens and 31–40 output tokens, at about `$0.000021`–`$0.000027`.
+
+| | Median | Mean | Min | Max |
+|---|---:|---:|---:|---:|
+| Full latency of `handle` | 985 ms | 1089 ms | 853 ms | 1520 ms |
+| Time to first token | 808 ms | 758 ms | 609 ms | 1006 ms |
+| Streaming call, full response | 1073 ms | 1070 ms | 899 ms | 1333 ms |
+
+Exact samples are in [benchmarks/checked_baseline.json](benchmarks/checked_baseline.json). Reproduce with:
+
+```bash
+uv run --env-file .env python scripts/benchmark_checked.py
 ```
