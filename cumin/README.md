@@ -16,6 +16,23 @@ An LLM API built for multiple tenants that:
 - Attributes cost to each tenant based on their actual usage (tokens consumed, per model).
 - Enforces per-tenant quotas so usage stays within agreed limits.
 
+## Admin console
+
+The console at `/admin` covers tenants, plans, and usage. The overview shows this month's spend, requests, and tokens across every tenant, with a daily activity chart.
+
+![Admin overview](docs/screenshots/overview.png)
+
+Each tenant page shows its plan, budget and rate-limit usage, cost per API key, the ledger, searchable request logs, and stored responses. The playground sends a real request through every gate on behalf of a tenant, and the Plans page creates and edits plans.
+
+![Tenant page](docs/screenshots/tenant.png)
+
+Build the console, then start the server. `CUMIN_PORT` sets the port (default `8000`).
+
+```bash
+cd web && npm install && npm run build && cd ..
+uv run --env-file .env python main.py
+```
+
 ## Baseline, before plan and budget checks
 
 Measured on the unchecked path: `OpenAIInference.complete` has no auth, plan, or budget gate. Eight samples, one warmup discarded, model `gpt-4o-mini` (served as `gpt-4o-mini-2024-07-18`). Prompt: "In one sentence, explain what an API quota is." Each non-streaming call used 18 input tokens and 34–42 output tokens, with no cached input, at about `$0.000023`–`$0.000028`.
